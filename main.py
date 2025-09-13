@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, platform
 
 from commands import ls, cd, default, exit
 
@@ -22,12 +22,12 @@ class Emulator:
             return None
 
     def getHostName(self):
-        return os.uname().nodename
+        return platform.uname().node
 
     def getPrompt(self) -> str:
         host = self.getHostName()
 
-        user = os.getenv("USER")
+        user = os.getlogin()
         if not user:
             user = ""
         return f"{host}:{user}:~# "
@@ -55,7 +55,7 @@ class Emulator:
                 command.execute(self, *(prompt[1:]))
                 continue
             else:
-                print(f"Can't find '{prompt}'.")
+                print(f"Can't execute '{' '.join(prompt)}'.")
 
 
 if __name__ == "__main__":
