@@ -1,0 +1,1 @@
+python ../main.py -s ../startupScripts/startup1.te

@@ -1,25 +1,45 @@
-import os, sys, platform
+import os, sys, platform, argparse, sys
 
-from commands import ls, cd, default, exit
+from commands import ls, cd, default, exit, echo
+from typing import List, Dict, TypeVar, Any
 
-from typing import List, Dict, TypeVar
+
+parser = argparse.ArgumentParser(
+    prog="Custom terminal emulator",
+)
+parser.add_argument("-vfs", help="Path to virtual file system")
+parser.add_argument("-s", help="Path to startup script")
+
+class Args:
+    pass
+
 
 class Emulator:
-    def __init__(self) -> None:
+    def __init__(self, args) -> None:
+        self.args = args
         self.os = sys.platform
         self.running = True
 
-        self.aliases: Dict[str, default.Command] = {
+        self.aliases: Dict[str, Any(default.Command)] = {
             "ls": ls.Ls,
             "cd": cd.Cd,
+            "echo": echo.Echo,
             "exit": exit.Exit,
         }
+        print(f"Args:\n\t" + " ".join(sys.argv[1:]) + "\n")
+        if args.s and os.path.exists(args.s):
+            with open(args.s, "r") as f:
+                for line in f.readlines():
+                    line = line.strip().split(" ")
+                    print(self.getPrompt() + " ".join(line))
+                    self.executeCommand(line[0], line[1:])
 
     def getEnvVar(self, name: str) -> str | None:
+        name = name.replace("$", "")
         try:
-            return os.environ[name]
+            return str(os.environ[name])
         except KeyError:
-            return None
+            return ""
 
     def getHostName(self):
         return platform.uname().node
@@ -37,6 +57,21 @@ class Emulator:
             return self.aliases[name]
         return None
 
+    def executeCommand(self, command, args) -> None:
+        if command[0] == "$":
+            command = self.getEnvVar(command)
+
+        for i in range(len(args)):
+            if args[i][0] == "$":
+                args[i] = self.getEnvVar(args[i])
+
+        command = self.findCommand(command)
+        if command:
+            command.execute(self, *args)
+            return
+
+        print(f"Can't execute '{command}'.")
+
     def loop(self):
         while self.running:
             print(self.getPrompt(), end="")
@@ -44,20 +79,14 @@ class Emulator:
 
             if len(prompt) == 0:
                 continue
-            elif prompt[0] == "$":
-                print(self.getEnvVar(prompt[1:]))
-                continue
 
             prompt = prompt.split(" ")
 
-            command = self.findCommand(prompt[0])
-            if command:
-                command.execute(self, *(prompt[1:]))
-                continue
-            else:
-                print(f"Can't execute '{' '.join(prompt)}'.")
+            self.executeCommand(prompt[0], prompt[1:])
 
 
 if __name__ == "__main__":
-    e = Emulator()
+    args = Args()
+    parser.parse_args(namespace=args)
+    e = Emulator(args)
     e.loop()

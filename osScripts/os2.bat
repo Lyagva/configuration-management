@@ -1,0 +1,1 @@
+python ../main.py -s ../startupScripts/startup2.te -vfs "test"
