@@ -1,7 +1,8 @@
 import os, sys, platform, argparse, sys
 
-from commands import ls, cd, default, exit, echo
+from commands import ls, cd, default, exit, echo, touch, pwd, mkdir, tree
 from typing import List, Dict, TypeVar, Any
+from vfs import Vfs
 
 
 parser = argparse.ArgumentParser(
@@ -19,13 +20,21 @@ class Emulator:
         self.args = args
         self.os = sys.platform
         self.running = True
+        self.path = "/"
+        self.vfs = Vfs(args.vfs) if getattr(args, "vfs", None) else Vfs()
 
         self.aliases: Dict[str, Any(default.Command)] = {
             "ls": ls.Ls,
             "cd": cd.Cd,
             "echo": echo.Echo,
             "exit": exit.Exit,
+            "touch": touch.Touch,
+            "pwd": pwd.Pwd,
+            "mkdir": mkdir.Mkdir,
+            "tree": tree.Tree
         }
+
+
         print(f"Args:\n\t" + " ".join(sys.argv[1:]) + "\n")
         if args.s and os.path.exists(args.s):
             with open(args.s, "r") as f:
@@ -67,7 +76,10 @@ class Emulator:
 
         command = self.findCommand(command)
         if command:
-            command.execute(self, *args)
+            try:
+                command.execute(self, *args)
+            except Exception as e:
+                print(e)
             return
 
         print(f"Can't execute '{command}'.")
