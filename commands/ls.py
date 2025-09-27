@@ -1,8 +1,14 @@
 from commands.default import Command
 
 class Ls(Command):
+    """
+    Команда вывода содержимого текущей директории.
+    """
     @staticmethod
     def execute(emulator, *args) -> None:
+        """
+        Выводит список файлов и папок в текущей директории.
+        """
         try:
             folder = emulator.vfs._get_or_create_folder(emulator.path)
             if not folder.content:

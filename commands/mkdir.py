@@ -1,8 +1,14 @@
 from commands.default import Command
 
 class Mkdir(Command):
+    """
+    Команда создания папки (поддерживает вложенные пути).
+    """
     @staticmethod
     def execute(emulator, *args) -> None:
+        """
+        Создает все недостающие папки по указанному пути.
+        """
         if not args or not args[0]:
             return
         path_arg = args[0]

@@ -2,14 +2,23 @@ import argparse
 from commands.default import Command
 
 class Cd(Command):
+    """
+    Команда смены директории.
+    """
     @staticmethod
     def get_parser() -> argparse.ArgumentParser:
+        """
+        Парсер для аргумента пути.
+        """
         parser = argparse.ArgumentParser()
         parser.add_argument("path", nargs="?")
         return parser
 
     @staticmethod
     def execute(emulator, *args) -> None:
+        """
+        Смена текущей директории эмулятора.
+        """
         args, unknown = Cd.get_parser().parse_known_args(args)
         target = args.path if args.path else (unknown[0] if unknown else None)
         if not target:

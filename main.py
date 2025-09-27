@@ -12,11 +12,21 @@ parser.add_argument("-vfs", help="Path to virtual file system")
 parser.add_argument("-s", help="Path to startup script")
 
 class Args:
+    """
+    Вспомогательный класс для хранения аргументов командной строки.
+    """
     pass
 
 
 class Emulator:
+    """
+    Основной класс эмулятора терминала.
+    Реализует обработку команд, работу с виртуальной ФС, запуск скриптов, хранит состояние эмулятора.
+    """
     def __init__(self, args) -> None:
+        """
+        Инициализация эмулятора, загрузка ФС, настройка команд.
+        """
         self.args = args
         self.os = sys.platform
         self.running = True
@@ -44,6 +54,9 @@ class Emulator:
                     self.executeCommand(line[0], line[1:])
 
     def getEnvVar(self, name: str) -> str | None:
+        """
+        Возвращает значение переменной окружения по имени.
+        """
         name = name.replace("$", "")
         try:
             return str(os.environ[name])

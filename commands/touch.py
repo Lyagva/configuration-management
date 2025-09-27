@@ -2,16 +2,29 @@ import argparse
 
 
 class Touch:
+    """
+    Команда создания файла (поддерживает вложенные пути).
+    """
+
     @staticmethod
     def get_parser() -> argparse.ArgumentParser:
+        """
+        Парсер аргументов для команды touch.
+        """
         return argparse.ArgumentParser()
 
     @staticmethod
     def help(self) -> str:
+        """
+        Строка помощи для команды touch.
+        """
         return ""
 
     @staticmethod
     def execute(emulator, *args) -> None:
+        """
+        Создает все недостающие папки и файл по указанному пути.
+        """
         if not args or not args[0]:
             return
         full_path = args[0]

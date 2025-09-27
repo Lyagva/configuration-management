@@ -2,8 +2,14 @@ import argparse
 from commands.default import Command
 
 class Echo(Command):
+    """
+    Команда вывода текста или записи в файл.
+    """
     @staticmethod
     def get_parser() -> argparse.ArgumentParser:
+        """
+        Парсер для опций -i (ввод из файла) и -o (вывод в файл).
+        """
         parser = argparse.ArgumentParser()
         parser.add_argument("-i", "--input")
         parser.add_argument("-o", "--output")
@@ -11,6 +17,9 @@ class Echo(Command):
 
     @staticmethod
     def execute(emulator, *args) -> None:
+        """
+        Выводит текст или записывает его в файл.
+        """
         parser = Echo.get_parser()
         parsed, unknown = parser.parse_known_args(args)
         text = " ".join(unknown)
